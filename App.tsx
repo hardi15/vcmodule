@@ -1,118 +1,43 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React, {useState} from 'react';
+import {SafeAreaView, StyleSheet} from 'react-native';
+import {HomeScreen} from './src/HomeScreen';
+import {CallScreen} from './src/CallScreen'
+import {StreamVideo, StreamVideoClient} from '@stream-io/video-react-native-sdk';
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+const apiKey = 'mmhfdzb5evj2'; // the API key can be found in the "Credentials" section
+const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiUGFkbV9fQW1pZGFsYSIsImlzcyI6Imh0dHBzOi8vcHJvbnRvLmdldHN0cmVhbS5pbyIsInN1YiI6InVzZXIvUGFkbV9fQW1pZGFsYSIsImlhdCI6MTcxMTQ3NTM3MiwiZXhwIjoxNzEyMDgwMTc3fQ.KgpeQ9nucyg6RTT0MHlw4q9GYp9WDzuw_IneT61T-eE'; // the token can be found in the "Credentials" section
+const userId = 'Padm__Amidala'; // the user id can be found in the "Credentials" section
+const callId = 'bhXYm6gSIEav'; // the call id can be found in the "Credentials" section
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+const user = {
+  id: userId,
+  name: 'John Malkovich',
+  image: `https://getstream.io/random_png/?id=${userId}&name=John+Malkovich`,
+};
+const client = new StreamVideoClient({ apiKey, user, token });
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
-
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+export default function App() {
+  const [activeScreen, setActiveScreen] = useState('home');
+  const goToCallScreen = () => setActiveScreen('call-screen');
+  const goToHomeScreen = () => setActiveScreen('home');
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <StreamVideo client={client}>
+      <SafeAreaView style={styles.container}>
+        {activeScreen === 'call-screen' ? (
+          <CallScreen goToHomeScreen={goToHomeScreen} callId={callId} />
+        ) : (
+          <HomeScreen goToCallScreen={goToCallScreen} />
+        )}
+      </SafeAreaView>
+    </StreamVideo>
   );
 }
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    textAlign: 'center',
   },
 });
-
-export default App;
